@@ -30,7 +30,7 @@ router.get('/product/:id', async (req, res)=>{
 })
 
 router.get('/product', async (req, res)=>{
-    await productDB.find().exec().then((product)=>{
+    await productDB.find({ avail: 1}).exec().then((product)=>{
         res.send(product)
     })
 })
