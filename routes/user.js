@@ -32,9 +32,22 @@ router.post('/createUser', async (req, res)=>{
     try {
         if(req.body.phone == "01012345678"){
             await userDB.findOne({phone: req.body.phone}).then((result)=>{
-                res.send(result)
+                if(result){
+                    res.send(result)
+                } else {
+                    const user = new userDB({
+                        _id: makeid(20),
+                        phone: req.body.phone,
+                        address: "",
+                        activation_code: 123456
+                    })
+                    user.save().then(result => {
+                        res.send(result)
+                    })
+                }
             })
-        }else {
+        }
+        else {
         await userDB.findOne({phone: req.body.phone}).then((result)=>{
             if(result){
                 let activation = Math.floor(100000 + Math.random() * 900000)
@@ -115,6 +128,16 @@ router.post('/verifyUser', async (req, res)=>{
         res.send({message: "Error"})
     }
 
+})
+
+
+router.delete('/delete/user/:id', async (req, res)=>{
+    const phone_num = req.params.id
+    try {
+        await userDB.deleteOne({phone: phone_num}).then(data=> res.send(data))
+    } catch (error) {
+        res.status(404).send('Not found')
+    }
 })
 
 
